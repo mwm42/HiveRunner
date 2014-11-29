@@ -17,11 +17,11 @@
 package com.klarna.hiverunner;
 
 import com.klarna.reflection.ReflectionUtils;
+import org.apache.derby.jdbc.EmbeddedDriver;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.shims.Hadoop23Shims;
 import org.apache.hadoop.hive.shims.ShimLoader;
-import org.hsqldb.jdbc.JDBCDriver;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
@@ -46,13 +46,13 @@ class StandaloneHiveServerContext implements HiveServerContext {
     StandaloneHiveServerContext(TemporaryFolder basedir) {
         this.basedir = basedir;
 
-        this.metaStorageUrl = "jdbc:hsqldb:mem:" + UUID.randomUUID().toString();
+        this.metaStorageUrl = "jdbc:derby:memory:" + UUID.randomUUID().toString();
 
         hiveConf.setBoolVar(HIVESTATSAUTOGATHER, false);
 
         // Set the hsqldb driver. datanucleus will
-        hiveConf.set("datanucleus.connectiondrivername", "org.hsqldb.jdbc.JDBCDriver");
-        hiveConf.set("javax.jdo.option.ConnectionDriverName", "org.hsqldb.jdbc.JDBCDriver");
+        hiveConf.set("datanucleus.connectiondrivername", "org.apache.derby.jdbc.EmbeddedDriver");
+        hiveConf.set("javax.jdo.option.ConnectionDriverName", "org.apache.derby.jdbc.EmbeddedDriver");
 
         // No pooling needed. This will save us a lot of threads
         hiveConf.set("datanucleus.connectionPoolingType", "None");
@@ -64,7 +64,7 @@ class StandaloneHiveServerContext implements HiveServerContext {
         hiveConf.setVar(HADOOPBIN, "NO_BIN!");
 
         try {
-            Class.forName(JDBCDriver.class.getName());
+            Class.forName(EmbeddedDriver.class.getName());
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
