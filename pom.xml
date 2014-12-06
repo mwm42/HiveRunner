@@ -3,7 +3,7 @@
 
     <groupId>com.klarna</groupId>
     <artifactId>hiverunner</artifactId>
-    <version>0.9.0-cdh5.1.2</version>
+    <version>0.9.0-cdh5.2.1</version>
     <packaging>jar</packaging>
 
     <licenses>
@@ -29,9 +29,9 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <dep.version.hadoop.mr1>2.3.0-mr1-cdh5.1.2</dep.version.hadoop.mr1>
-        <dep.version.hadoop>2.3.0-cdh5.1.2</dep.version.hadoop>
-        <dep.version.hive>0.12.0-cdh5.1.2</dep.version.hive>
+        <dep.version.hadoop.mr1>2.5.0-mr1-cdh5.2.1</dep.version.hadoop.mr1>
+        <dep.version.hadoop>2.5.0-cdh5.2.1</dep.version.hadoop>
+        <dep.version.hive>0.13.1-cdh5.2.1</dep.version.hive>
     </properties>
 
     <dependencies>
@@ -69,6 +69,19 @@
             <groupId>org.apache.hive</groupId>
             <artifactId>hive-service</artifactId>
             <version>${dep.version.hive}</version>
+            <exclusions>
+                <exclusion>
+                  <groupId>org.eclipse.jetty.aggregate</groupId>
+                  <artifactId>jetty-all</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- cloudera seems to ship a version of jetty-all, which is not in public repos -->
+        <dependency>
+            <groupId>org.eclipse.jetty.aggregate</groupId>
+            <artifactId>jetty-all</artifactId>
+            <version>7.6.16.v20140903</version>
         </dependency>
 
         <dependency>

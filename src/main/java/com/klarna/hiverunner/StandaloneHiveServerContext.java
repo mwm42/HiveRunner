@@ -115,17 +115,23 @@ class StandaloneHiveServerContext implements HiveServerContext {
 
     protected void configureJobTrackerMode(HiveConf conf) {
         /*
-        * Overload shims to make sure that org.apache.hadoop.hive.ql.exec.MapRedTask#runningViaChild
+         * Overload shims to make sure that org.apache.hadoop.hive.ql.exec.MapRedTask#runningViaChild
          * validates to false.
-         *
-         * Search for usage of org.apache.hadoop.hive.shims.HadoopShims#isLocalMode to find other affects of this.
-        */
+         */
         ReflectionUtils.setStaticField(ShimLoader.class, "hadoopShims", new Hadoop23Shims() {
             @Override
             public boolean isLocalMode(Configuration conf) {
-                return false;
+                final StackTraceElement caller = Thread.currentThread().getStackTrace()[2];
+                if (caller.getClassName().equals("org.apache.hadoop.hive.ql.exec.mr.MapRedTask")
+                    && caller.getMethodName().equals("execute") ){
+                    return false;
+                }
+                return true;
             }
         });
+//        conf.setBoolean("mapreduce.job.ubertask.enabled", false);
+//        conf.setBoolVar(HiveConf.ConfVars.SUBMITVIACHILD, false);
+
     }
 
     protected void configureFileSystem(TemporaryFolder basedir, HiveConf conf) {

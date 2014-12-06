@@ -53,26 +53,28 @@ public class IntegerPartitionFormatTest {
 
     @Test
     public void testInteger() {
-        Assert.assertEquals(Arrays.asList("6\t07", "6\t07"), hiveShell.executeQuery("select * from foo where id = 6"));
+        // since hive 0.13 int partitions get trimmed (it used to return "6\t07", "6\t07")
+        Assert.assertEquals(Arrays.asList("6\t7", "6\t7"), hiveShell.executeQuery("select * from foo where id = 6"));
     }
 
     @Test
     public void testPrefixedInteger() {
-        Assert.assertEquals(Arrays.asList("6\t07", "6\t07"), hiveShell.executeQuery("select * from foo where id = 06"));
+        // since hive 0.13 int partitions get trimmed (it used to return "6\t07", "6\t07")
+        Assert.assertEquals(Arrays.asList("6\t7", "6\t7"), hiveShell.executeQuery("select * from foo where id = 06"));
     }
 
 
     @Test
     public void testPrefixedPartitionInteger() {
-        // In 0.11 version of Hive month = 07 would resolve to true
-        Assert.assertEquals(Arrays.asList(), hiveShell.executeQuery("select * from foo where id = 6 and month = 07"));
+        // since hive 0.13 int partitions get trimmed (it used to return "[]")
+        Assert.assertEquals(Arrays.asList("6\t7", "6\t7"), hiveShell.executeQuery("select * from foo where id = 6 and month = 07"));
     }
 
 
     @Test
     public void testNonPrefixedPartitionInteger() {
-        // In 0.11 version of Hive month = 07 would resolve to true
-        Assert.assertEquals(Arrays.asList(), hiveShell.executeQuery("select * from foo where id = 6 and month = 7"));
+        // since hive 0.13 int partitions get trimmed (it used to return "[]")
+        Assert.assertEquals(Arrays.asList("6\t7", "6\t7"), hiveShell.executeQuery("select * from foo where id = 6 and month = 7"));
     }
 
 
