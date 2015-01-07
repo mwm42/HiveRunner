@@ -121,14 +121,18 @@ class StandaloneHiveServerContext implements HiveServerContext {
         ReflectionUtils.setStaticField(ShimLoader.class, "hadoopShims", new Hadoop23Shims() {
             @Override
             public boolean isLocalMode(Configuration conf) {
-                final StackTraceElement caller = Thread.currentThread().getStackTrace()[2];
-                if (caller.getClassName().equals("org.apache.hadoop.hive.ql.exec.mr.MapRedTask")
-                    && caller.getMethodName().equals("execute") ){
-                    return false;
+                final StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+                final StackTraceElement callers[] = new StackTraceElement[]{stackTrace[2], stackTrace[3]};
+                for (StackTraceElement caller : callers) {
+                    if (caller.getClassName().equals("org.apache.hadoop.hive.ql.exec.mr.MapRedTask")
+                            && caller.getMethodName().equals("execute")) {
+                        return false;
+                    }
                 }
                 return true;
             }
         });
+        conf.setBoolVar(HiveConf.ConfVars.LOCALMODEAUTO, true);
 //        conf.setBoolean("mapreduce.job.ubertask.enabled", false);
 //        conf.setBoolVar(HiveConf.ConfVars.SUBMITVIACHILD, false);
 
